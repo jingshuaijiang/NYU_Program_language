@@ -1,0 +1,148 @@
+% sml
+Standard ML of New Jersey (64-bit) v110.94 [built: Fri Nov 01 16:08:14 2019]
+- (* ML has a map function *)
+- fun f x  =  x * 2;
+val f = fn : int -> int
+- map f [1,2,3,4,5];
+val it = [2,4,6,8,10] : int list
+- (* ML lambda expressions are written:  fn par => body *)
+- map (fn x => x * 2) [1,2,3,4,5] ;
+val it = [2,4,6,8,10] : int list
+- (* You can write map in ML, of course *)
+- fun map f [] = []
+=  |  map f (x::xs) = (f x) :: map f xs ;
+val map = fn : ('a -> 'b) -> 'a list -> 'b list
+- (* In ML, functions are "curried", namely that each ML
+=    function actually takes only a single parameter, but
+=    may return a function taking the next parameter, and so on *)
+- fun add x y = x + y ;
+val add = fn : int -> int -> int
+- (* I can apply add to only a single parameter *)
+- add 3;
+val it = fn : int -> int
+- (* The above definition of add is equivalent to: *)
+- fun add x = (fn y => x + y) ;
+val add = fn : int -> int -> int
+- val g = add 3;
+val g = fn : int -> int
+- g 6;
+val it = 9 : int
+- g 10;
+val it = 13 : int
+- fun f x y z = if x then y else z ;
+val f = fn : bool -> 'a -> 'a -> 'a
+- fun compose f g x = f (g x)  ;
+val compose = fn : ('a -> 'b) -> ('c -> 'a) -> 'c -> 'b
+- fun f x = if true then f x else x ;
+val f = fn : 'a -> 'a
+- (* tuples can be used as patterns *)
+- val (x,y) = (3,4) ;
+val x = 3 : int
+val y = 4 : int
+- fun g (x,y) = x + y ;
+val g = fn : int * int -> int
+- g (4,5) ;
+val it = 9 : int
+- (* ML has a let for nesting definitions *)
+- fun f x y = 
+=    let val z = x * y
+=        val w = x + y
+=    in  z * w
+=    end ;
+val f = fn : int -> int -> int
+- let val x = 3
+=     val y = x + 1
+= in x * y 
+= end ;
+val it = 12 : int
+- (* use "and" to define mutually recursive functions *)
+- fun fac1 0 = 1
+=  |  fac1 n = n * fac2 (n-1)
+= and fac2 0 = 1
+=  |  fac2 x = x * fac1 (x-1)  ;
+val fac1 = fn : int -> int
+val fac2 = fn : int -> int
+- (* could just as easily put the above definition inside a let *)
+- (* the logical operators are written "andalso" and "orelse" *)
+- fun h a b c = (a andalso b) orelse c  ;
+val h = fn : bool -> bool -> bool -> bool
+- (* In ML you can define your own types *)
+- (* by enumerating the values of that type *)
+- datatype stoplight = red | green | yellow  ;
+datatype stoplight = green | red | yellow
+- green ;
+val it = green : stoplight
+- (* can use the values (literals) as patterns *)
+- fun drive green = "go"
+=  |  drive red = "stop"
+=  |  drive yellow = "go faster" ;
+val drive = fn : stoplight -> string
+- (* within a new type, other values can be associated with 
+=    each value of the new type *)
+- datatype tree = leaf of int | node of (tree * tree)  ;
+datatype tree = leaf of int | node of tree * tree
+- leaf 6 ;
+val it = leaf 6 : tree
+- val t = node (leaf 4, node (node (leaf 5, leaf 6), leaf 7)) ;
+val t = node (leaf 4,node (node #,leaf #)) : tree
+- Control.Print.printDepth := 100; (* See the hints in ML assignment *)
+  Control.Print.printLength := 100;
+- t
+= ;
+val it = node (leaf 4,node (node (leaf 5,leaf 6),leaf 7)) : tree
+- (* can use leaf and node as patterns *)
+- fun fringe (leaf n) = [n]
+=  |  fringe (node (left, right)) = fringe left @ fringe right ;
+val fringe = fn : tree -> int list
+- fringe t ;
+val it = [4,5,6,7] : int list
+- (* datatypes can be polymorphic *)
+- datatype 'a tree = leaf of 'a | node of 'a tree * 'a tree  ;
+datatype 'a tree = leaf of 'a | node of 'a tree * 'a tree
+- leaf 6 ;
+val it = leaf 6 : int tree
+- leaf 3.2 ;
+val it = leaf 3.2 : real tree
+- val t = node (leaf 4,node (node (leaf 5,leaf 6),leaf 7)) ;
+val t = node (leaf 4,node (node (leaf 5,leaf 6),leaf 7)) : int tree
+- fun fringe (leaf n) = [n]
+=  |  fringe (node (left, right)) = fringe left @ fringe right ; 
+val fringe = fn : 'a tree -> 'a list
+- fringe t ;
+val it = [4,5,6,7] : int list
+- fringe (node (leaf "hello", leaf "bye")) ;
+val it = ["hello","bye"] : string list
+- leaf ;
+val it = fn : 'a -> 'a tree
+- [];
+val it = [] : 'a list
+- 3:: [] ;
+val it = [3] : int list
+- (* passing infix operators as parameters *)
+- fun foo (op +) x y = x + y ;
+val foo = fn : ('a * 'b -> 'c) -> 'a -> 'b -> 'c
+- foo (op +) 3 4 ;
+val it = 7 : int
+- foo (fn (a,b) => a @ b) [1,2,3] [4,5,6] ;
+val it = [1,2,3,4,5,6] : int list
+- foo (op * ) 3 4 ;
+val it = 12 : int
+- (* You can define your own infix operators *)
+- infix ++ 
+= ;
+infix ++
+- fun x ++ y = (x,x)::y 
+= ;
+val ++ = fn : 'a * ('a * 'a) list -> ('a * 'a) list
+- 3 ++ [(4,4),(5,5)] ;
+val it = [(3,3),(4,4),(5,5)] : (int * int) list
+- (* Exercise: define a function of type
+=     'a list -> 'b list -> ('a -> 'b) -> b   *)
+- fun foo [] (x::xs) f = x
+=  |  foo (y::ys) [] f = f y ;
+stdIn:95.5-96.27 Warning: match nonexhaustive
+          (nil,x :: xs,f) => ...
+          (y :: ys,nil,f) => ...
+  
+val foo = fn : 'a list -> 'b list -> ('a -> 'b) -> 'b
+

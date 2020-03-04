@@ -1,0 +1,81 @@
+% sml
+Standard ML of New Jersey v110.91 [built: Thu Jun 20 11:06:57 2019]
+- (* this is a comment *)
+- (* the basic types are int, real, string *)
+- 4
+= ;  (* the 
+val it = 4 : int
+- ;  (* the ";" is not part of the language, it just tells the system you're done typing *)
+- (* primary aggregate structure is a list *)
+- [1,2,3,4];
+val it = [1,2,3,4] : int list
+- (* lists are homogeneous, all elements must be of the same type *)
+- [1,2,"hello"] ;
+stdIn:4.1-4.14 Error: operator and operand do not agree [overload conflict]
+  operator domain: [int ty] * [int ty] list
+  operand:         [int ty] * string list
+  in expression:
+    2 :: "hello" :: nil
+- [[1,2],[3,4,5],[6]] ;
+val it = [[1,2],[3,4,5],[6]] : int list list
+- (* tuple:  an ordered collection of elements of different types *)
+- (* like a cartesian product *)
+- (4, "bye", 3.2) ;
+val it = (4,"bye",3.2) : int * string * real
+- (* defining variables *)
+- val x = 4 ;
+val x = 4 : int
+- (* defining functions *)
+- fun foo x y = x + y ;
+val foo = fn : int -> int -> int
+- foo 3 4;
+val it = 7 : int
+- (* You can declare the types of variables and parameters if you want*)
+- fun bar (x:real) y = x + y  ;
+val bar = fn : real -> real -> real
+- (* you can use patterns to define functions *)
+- fun fac 0 = 1
+=  |  fac n = n * fac (n-1)
+= ;
+val fac = fn : int -> int
+- (* ML has CONS for creating a list, but it's written "::" *)
+-  1 :: [2,3,4] ;
+val it = [1,2,3,4] : int list
+- (* The :: symbol can be used in a pattern *)
+- fun sum [] = 0
+=  |  sum (x::xs) = x + sum xs  ;
+val sum = fn : int list -> int
+- sum [1,2,3,4,5];
+val it = 15 : int
+- fun sumr [] = 0.0
+=  |  sumr (y::ys) = y + sumr ys  ;
+val sumr = fn : real list -> real
+-  (* ML supports polymorphism  -- the ability to call a function on
+=     parameters of different types *)
+- length [1,2,3] ;
+val it = 3 : int
+- length [1.0, 2.0, 3.0] ;
+val it = 3 : int
+- length [[1,2], [2,4]] ;
+val it = 2 : int
+- (* let's write out the definition of length *)
+- fun length [] = 0
+=  |  length (z::rest) = 1 + length rest  ;
+val length = fn : 'a list -> int
+- length [1,2.0,3] ;
+stdIn:35.8-35.17 Error: operator and operand do not agree [overload conflict]
+  operator domain: real * real list
+  operand:         real * [int ty] list
+  in expression:
+    2.0 :: 3 :: nil
+- (* append is written @ *)
+- [1,2,3] @ [4,5,6] ;
+val it = [1,2,3,4,5,6] : int list
+- fun append [] L = L
+=  |  append (x::xs) L = x :: append xs L  ;
+val append = fn : 'a list -> 'a list -> 'a list
+- append [1,2] [3,4] ;
+val it = [1,2,3,4] : int list
+- append ["hello", "there"] ["new york"] ;
+val it = ["hello","there","new york"] : string list
+

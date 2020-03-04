@@ -1,0 +1,204 @@
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{latexsym,amsfonts,amssymb,amsthm,amsmath}
+\usepackage{listings}
+
+\lstset{
+ basicstyle=\fontsize{7}\selectfont\ttfamily
+ columns=fixed,                           % 设定行号格式
+ frame=none,                                          % 不显示背景边框
+ keywordstyle=\color[RGB]{40,40,255},                 % 设定关键字颜色
+ numberstyle=\footnotesize\color{darkgray},           
+ commentstyle=\it\color[RGB]{0,96,96},                % 设置代码注释的格式
+ stringstyle=\rmfamily\slshape\color[RGB]{128,0,0},   % 设置字符串格式
+ showstringspaces=false,                              % 不显示字符串中的空格
+}
+
+\setlength{\parindent}{0in}
+\setlength{\oddsidemargin}{0in}
+\setlength{\textwidth}{6.5in}
+\setlength{\textheight}{8.8in}
+\setlength{\topmargin}{0in}
+\setlength{\headheight}{18pt}
+
+
+
+\title{Program Language homework2}
+\author{jingshuai jiang jj2903}
+
+\begin{document}
+
+\maketitle
+
+\vspace{0.5in}
+
+
+
+\subsection*{Exercise 1}
+
+a). $[a-z]^*[A-Z][a-z]^*[0-9][a-z]^*[A-Z][a-z]^*$
+\\[10pt]b).$([0-9]|[1-9][0-9]^*).[0-9][0-9]^*E([0-9]|[1-9][0-9]^*)$
+\\[10pt]c).$[A-Z](\epsilon|[A-Za-z0-9\_]|[A-Za-z0-9\_][A-Za-z0-9\_]|[A-Za-z0-9\_][A-Za-z0-9\_][A-Za-z0-9\_]|[A-Za-z0-9\_][A-Za-z0-9\_][A-Za-z0-9\_][A-Za-z0-9\_]|[A-Za-z0-9\_][A-Za-z0-9\_][A-Za-z0-9\_][A-Za-z0-9\_][A-Za-z0-9\_]|[A-Za-z0-9\_][A-Za-z0-9\_][A-Za-z0-9\_][A-Za-z0-9\_][A-Za-z0-9\_][A-Za-z0-9\_])$
+
+
+
+
+\subsection*{Exercise 2}
+\begin{lstlisting}
+    Prog => Parts
+		|Parts Parts
+
+    Parts => Dec
+		|Fun
+		|Proc
+
+    Fun => fun name(P) Dec {content}
+
+    Proc => proc name(P) Dec {content}
+
+    content => content content
+		   |E
+		   |return name
+
+    E=> EOE
+	    |name(V)
+
+    O => =
+	    |-
+	    |*
+	    |/
+	    |+
+
+    V => name
+	    |num
+	    |V,V
+
+    P => ϵ
+	    |P,P
+	    |Dec
+
+    Dec => name:name
+    
+\end{lstlisting}
+
+
+\clearpage
+\subsection*{Exercise 3}
+
+a). $static\ scoping:$ names used in a function are resolved in the environment of the function definition.
+\\[10pt] $dynamic\ scoping:$ names used in a function are resolved in the environment of the function called.
+\\[10pt]b).
+\begin{lstlisting}
+    begin
+    integer m, n;
+
+    procedure A;
+        begin
+        print("in A : n = ", n);
+        end;
+
+    procedure B(n: integer);
+        begin
+        print("in B : m = ", m);
+        print("in B : n = ", n);
+        hardy;
+        end;
+
+    m := 50;
+    n := 100;
+    print("in main program : n = ", n);
+    B(1);
+    A;
+    end;
+    
+\end{lstlisting}
+The static scoping outputs:
+\\[10pt] in main program : n = 100
+\\[10pt]in B : m = 50
+\\[10pt]in B : n = 1
+\\[10pt]in A : n = 100    
+\\[10pt]in A : n = 100 
+
+The dynamic scoping outputs:
+\\[10pt] in main program : n = 100
+\\[10pt]in B : m = 50
+\\[10pt]in B : n = 1
+\\[10pt]in A : n = 1    
+\\[10pt]in A : n = 100
+
+\vspace{1in}
+\textbf{c).} It will resolve the variable reference fisrt in the function itself. Then it will look for the variable from the function where it was defined.
+
+\vspace{1in}
+\textbf{d).} It will resolve the variable reference fisrt in the function itself. Then it will look for the variable from the function where it was called.
+
+\subsection*{Exercise 4}
+\clearpage
+\subsection*{Exercise 5}
+a).pass by value: 2 4 6 8 10
+\\[10pt]b).pass by value: 2 11 6 8 10
+\\[10pt]c).pass by value: 2 7 6 8 10
+\\[10pt]d).pass by value: 2 4 6 8 11
+
+\subsection*{Exercise 6}
+a).
+\begin{lstlisting}
+    
+with text_io, ada.integer_text_io;
+use text_io, ada.integer_text_io;
+
+procedure mainprog is
+package int_io is new integer_io (integer);
+
+    use int_io;
+
+    task oddtask is
+        entry okdone;
+    end oddtask;
+
+    task eventask is
+        entry okdone;
+    end eventask;
+
+    task body oddtask is
+    begin
+                accept okdone;
+                for k in 1..100 loop
+                ada.integer_text_io.put(k);
+                if k rem 10 = 0 and k /=100 then
+                eventask.okdone;
+                accept okdone;
+                end if;
+                if k =100 then
+                eventask.okdone;
+                end if;
+            end loop;
+    end oddtask;
+
+    task body eventask is
+    begin
+               accept okdone;
+            for k in 201 .. 300 loop
+              ada.integer_text_io.put(k);
+              if k rem 10 = 0 and k /=300 then
+              oddtask.okdone;
+              accept okdone;
+              end if;
+            end loop;
+    end eventask;
+
+begin
+        oddtask.okdone;
+end mainprog;
+
+\end{lstlisting}
+\vspace{2in} %Leave more space for comments!
+
+
+
+
+
+
+
+\end{document}
